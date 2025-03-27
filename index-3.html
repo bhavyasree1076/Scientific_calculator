@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Scientific Calculator</title>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #121212;
+            color: white;
+            font-family: Arial, sans-serif;
+        }
+
+        .container {
+            width: 350px;
+            padding: 20px;
+            border-radius: 15px;
+            background: #1e1e1e;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.5);
+            text-align: center;
+        }
+
+        #inputBox {
+            width: 100%;
+            height: 50px;
+            font-size: 1.5rem;
+            text-align: right;
+            margin-bottom: 15px;
+            padding: 10px;
+            border: none;
+            border-radius: 8px;
+            background-color: #222;
+            color: white;
+        }
+
+        .buttons {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+        }
+
+        button {
+            padding: 15px;
+            font-size: 1.2rem;
+            border: none;
+            border-radius: 8px;
+            background-color: #333;
+            color: white;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        button:hover {
+            background-color: #444;
+        }
+
+        .scientific-buttons {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .scientific-buttons button {
+            background-color: #444;
+            font-size: 1rem;
+        }
+
+        .scientific-buttons button:hover {
+            background-color: #555;
+        }
+
+        .operator {
+            background-color: #ff9500;
+            color: black;
+        }
+
+        .operator:hover {
+            background-color: #e08900;
+        }
+
+        /* Styling for AC and DEL buttons */
+        #clear, #delete {
+            background-color: #ff3b30;
+        }
+
+        #clear:hover, #delete:hover {
+            background-color: #d32f2f;
+        }
+
+        /* Special styling for parentheses */
+        button.parenthesis {
+            background-color: #555;
+            font-weight: bold;
+        }
+
+        button.parenthesis:hover {
+            background-color: #666;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <input type="text" id="inputBox" readonly>
+        <div class="scientific-buttons">
+            <button onclick="calculateScientific('sin')">sin</button>
+            <button onclick="calculateScientific('cos')">cos</button>
+            <button onclick="calculateScientific('tan')">tan</button>
+            <button onclick="calculateScientific('asin')">sin⁻¹</button>
+            <button onclick="calculateScientific('acos')">cos⁻¹</button>
+            <button onclick="calculateScientific('atan')">tan⁻¹</button>
+            <button onclick="calculateScientific('sqrt')">√x</button>
+            <button onclick="calculateScientific('log')">log</button>
+            <button onclick="calculateScientific('ln')">ln</button>
+            <button onclick="calculateScientific('exp')">e^x</button>
+            <button class="parenthesis" onclick="appendToInput('(')">(</button>
+            <button class="parenthesis" onclick="appendToInput(')')">)</button>
+        </div>
+        <div class="buttons">
+            <button id="clear">AC</button>
+            <button id="delete">DEL</button>
+            <button class="operator" onclick="appendToInput('%')">%</button>
+            <button class="operator" onclick="appendToInput('/')">/</button>
+
+            <button onclick="appendToInput('7')">7</button>
+            <button onclick="appendToInput('8')">8</button>
+            <button onclick="appendToInput('9')">9</button>
+            <button class="operator" onclick="appendToInput('*')">*</button>
+
+            <button onclick="appendToInput('4')">4</button>
+            <button onclick="appendToInput('5')">5</button>
+            <button onclick="appendToInput('6')">6</button>
+            <button class="operator" onclick="appendToInput('-')">-</button>
+
+            <button onclick="appendToInput('1')">1</button>
+            <button onclick="appendToInput('2')">2</button>
+            <button onclick="appendToInput('3')">3</button>
+            <button class="operator" onclick="appendToInput('+')">+</button>
+
+            <button onclick="appendToInput('00')">00</button>
+            <button onclick="appendToInput('0')">0</button>
+            <button onclick="appendToInput('.')">.</button>
+            <button class="operator" onclick="calculateResult()">=</button>
+        </div>
+    </div>
+
+    <script>
+        let input = document.getElementById('inputBox');
+        let string = "";
+        let scientificFunctions = {
+            'sin': (x) => Math.sin(x * Math.PI / 180),
+            'cos': (x) => Math.cos(x * Math.PI / 180),
+            'tan': (x) => Math.tan(x * Math.PI / 180),
+            'asin': (x) => Math.asin(x) * 180 / Math.PI,
+            'acos': (x) => Math.acos(x) * 180 / Math.PI,
+            'atan': (x) => Math.atan(x) * 180 / Math.PI,
+            'sqrt': (x) => Math.sqrt(x),
+            'log': (x) => Math.log10(x),
+            'ln': (x) => Math.log(x),
+            'exp': (x) => Math.exp(x)
+        };
+
+        function appendToInput(value) {
+            string += value;
+            input.value = string;
+        }
+
+        function calculateResult() {
+            try {
+                string = eval(string);
+                input.value = string;
+            } catch (error) {
+                input.value = "Error";
+            }
+        }
+
+        function calculateScientific(func) {
+            let num = parseFloat(input.value);
+            if (!isNaN(num) && scientificFunctions[func]) {
+                input.value = scientificFunctions[func](num).toFixed(6);
+            }
+        }
+
+        document.getElementById('clear').addEventListener('click', () => {
+            string = "";
+            input.value = "";
+        });
+
+        document.getElementById('delete').addEventListener('click', () => {
+            string = string.slice(0, -1);
+            input.value = string;
+        });
+    </script>
+</body>
+</html>
